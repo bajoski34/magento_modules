@@ -3,8 +3,9 @@
 namespace Flutterwave\Payments\Logger;
 
 use Monolog\Logger;
+use \Magento\Framework\Logger\Handler\Base;
 
-class Handler extends \Magento\Framework\Logger\Handler\Base
+class Handler extends Base
 {
     /**
      * Logging level
