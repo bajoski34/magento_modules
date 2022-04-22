@@ -2,15 +2,19 @@
 
 namespace Flutterwave\Payments\Helper;
 
+use Flutterwave\Payments\Exception\WebhookException;
+
 class Webhook {
     public function __construct(
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\App\Response\Http $response,
+        \Flutterwave\Payments\Logger\WebhooksLogger $webhooksLogger,
         \Flutterwave\Payments\Model\Config $config
     )
     {
         $this->request = $request;
         $this->response = $response;
+        $this->webhooksLogger = $webhooksLogger;
         $this->config = $config;
     }
 
@@ -79,6 +83,36 @@ class Webhook {
             $this->log($e->getTraceAsString());
             $this->error($e->getMessage(), $statusCode);
         }
+    }
+
+    protected function getEventType(array $event)
+    {
+        $eventType = $event['type'];
+        return $eventType;
+    }
+
+    protected function getPaymentMethodFrom($event)
+    {
+        if (isset($event['data']['object']['type']))
+            $paymentMethod = $event['data']['object']['type'];
+        else if (isset($event['data']['object']['payment_method_types']))
+            $paymentMethod = implode("_", $event['data']['object']['payment_method_types']);
+        else if (isset($event['data']['object']['payment_method_details']))
+            $paymentMethod = $event['data']['object']['payment_method_details']['type'];
+        else
+            $paymentMethod = '';
+
+        return $paymentMethod;
+    }
+
+    public function log($msg)
+    {
+        // Magento 2.0.0 - 2.4.3
+        if (method_exists($this->webhooksLogger, 'addInfo'))
+            $this->webhooksLogger->addInfo($msg);
+        // Magento 2.4.4+
+        else
+            $this->webhooksLogger->info($msg);
     }
 
     public function verifyWebhookSignature()

@@ -16,6 +16,6 @@ class Json implements ActionInterface
         return $this->jsonFactory->create()->setHeader('Content-Type', 'application/json')->setData([
             'name' => 'Primfix LTD',
             'job' => 'Software Engineer'
-        ])
+        ]);
     }
 }

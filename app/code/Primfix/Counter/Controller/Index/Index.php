@@ -6,7 +6,7 @@ namespace Primfix\Counter\Controller\Index;
 
 use Magento\Framework\App\ActionInterface;
 
-class Index implement ActionInterface 
+class Index implements ActionInterface 
 {
     public function __construct(\Magento\Framework\Controller\Result\RawFactory $resultFactory)
     {
